@@ -7,6 +7,7 @@ contract Election {
     string name;
     uint voteCount;
   }
+  mapping(address => bool) public voters;
   mapping(uint => Candidate) public candidates;
   uint public candidatesCount;
 
@@ -15,9 +16,17 @@ contract Election {
     addCandidate('Candidate 2');
   }
 
-  function addCandidate (string memory name) private {
+  function addCandidate (string memory _name) private {
     candidatesCount ++;
-    candidates[candidatesCount] = Candidate(candidatesCount, name, 0);
+    candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
+  }
+
+  function vote (uint _candidateId) public {
+    require(!voters[msg.sender], 'This user has already voted');
+    require(_candidateId > 0 && _candidateId <= candidatesCount, 'Candidate does not exists');
+
+    voters[msg.sender] = true;
+    candidates[_candidateId].voteCount ++;
   }
 
 }
